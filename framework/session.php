@@ -1,10 +1,4 @@
 <?php
-/**
- * User: abiusx
- * Date: 5/24/15
- * Time: 7:00 PM
- */
-namespace iframework;
 class Session
 {
     function __construct()

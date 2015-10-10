@@ -1,10 +1,4 @@
 <?php
-/**
- * User: abiusx
- * Date: 5/24/15
- * Time: 6:31 PM
- */
-namespace iframework;
 class Database
 {
     public $driver;
@@ -25,7 +19,7 @@ class Database
             $this->connection=new \PDO("{$this->driver}:{$this->dbname}",$this->username,$this->password);//;username={$this->username};password={$this->password}");
         else
             $this->connection=new \PDO("{$this->driver}:host={$this->host};dbname={$this->dbname}",$this->username,$this->password);//;username={$this->username};password={$this->password}");
-         $this->connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+         $this->connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION); //exception on error
     }
 
     /**
@@ -38,9 +32,6 @@ class Database
         $args = func_get_args ();
         array_shift ( $args );
         $statement = $this->connection->prepare ( $query );
-        var_dump($statement);
-        if (!$statement)
-            print_r($this->connection->errorInfo());
         $out=$statement->execute ($args);
         $type = substr ( trim ( strtoupper ( $query ) ), 0, 6 );
         if ($type == "INSERT")

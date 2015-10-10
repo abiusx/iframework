@@ -1,10 +1,4 @@
 <?php
-/**
- * User: abiusx
- * Date: 5/24/15
- * Time: 7:17 PM
- */
-namespace iframework;
 class HTTP
 {
     static function IP()
@@ -73,5 +67,11 @@ class HTTP
         if ($stripBase)
             $r=substr($r,strlen("__base=".i::request()));
         return $r;
+    }
+    static function notFound()
+    {
+        header("404 Not Found");
+        echo "<html><head><title>404 Not Found</title></head>\n<body><h1>404 Not Found</h1>\nThe requested page <strong>".safe(i::request())."</strong> not found.\n</body></html>";
+
     }
 }

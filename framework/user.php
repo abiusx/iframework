@@ -1,11 +1,4 @@
 <?php
-/**
- * User: abiusx
- * Date: 5/24/15
- * Time: 6:52 PM
- */
-namespace iframework;
-
 class Password
 {
     const PROTOCOL_SHA512=1;
@@ -56,9 +49,9 @@ class UserManager
 {
     static $Timeout=1800; //30min
     /**
-    Removes a user form system users if exists
-    @param Username of the user
-    @return boolean
+    * Removes a user form system users if exists
+    * @param Username of the user
+    * @return boolean
      */
     function delete($username)
     {
@@ -91,11 +84,11 @@ class UserManager
     }
 
     /**
-    Edits a user credentials
-    @param String $OldUsername
-    @param String $NewUsername
-    @param String $NewPassword leave null to not change
-    @return null on old user doesn't exist, false on new user already exists,  true on success.
+    *Edits a user credentials
+    *@param String $OldUsername
+    *@param String $NewUsername
+    *@param String $NewPassword leave null to not change
+    *@return null on old user doesn't exist, false on new user already exists,  true on success.
      */
     function edit($oldUsername, $newUsername, $newPassword = null)
     {
@@ -112,10 +105,10 @@ class UserManager
         return true;
     }
     /**
-    Validates a user credentials
-    @param username of the user
-    @param password of the user
-    @return boolean
+     * Validates a user credentials
+     * @param username of the user
+     * @param password of the user
+     * @return boolean
      */
     function checkCredentials($username, $password)
     {
@@ -153,11 +146,11 @@ class UserManager
         return $res!=null;
     }
     /**
-    Creates a new user in the system
-    @param Username of the new user
-    @param Password of the new user
-    @return integer UserID on success
-    null on User Already Exists
+     * Creates a new user in the system
+     * @param Username of the new user
+     * @param Password of the new user
+     * @return integer UserID on success
+     * null on User Already Exists
      */
     function create($username, $password)
     {
