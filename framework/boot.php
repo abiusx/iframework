@@ -27,7 +27,5 @@ function iframework_boot()
 	    include __DIR__."/install.php";
 	}
 
-	i::serve();
-
 }
 iframework_boot();

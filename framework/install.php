@@ -17,7 +17,7 @@ $htaccess="RewriteEngine on
 #RewriteBase ".i::url()."
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^([^?]*)$ index.php?__base=$1 [NC,L,QSA]";
+RewriteRule ^([^?]*)$ start.php?__base=$1 [NC,L,QSA]";
 
 
 if ((file_exists(".htaccess") and is_writable(".htaccess")) or is_writable(getcwd()))
