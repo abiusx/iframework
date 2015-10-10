@@ -1,11 +1,4 @@
 <?php
-/**
- * User: abiusx
- * Date: 5/24/15
- * Time: 6:47 PM
- */
-//namespace iframework;
-require_once __DIR__."/base.php";
 require_once __DIR__."/functions.php";
 require_once __DIR__."/db.php";
 require_once __DIR__."/session.php";
@@ -14,6 +7,11 @@ require_once __DIR__."/http.php";
 class i
 {
 
+    static function root()
+    {
+        return self::$root;
+
+    }
     static function __init($name,$value)
     {
         self::$$name=$value;
@@ -33,6 +31,7 @@ class i
     protected static $activeDb=-1;
     protected static $request;
     protected static $users,$http,$session;
+    protected static $root;
 
 
     /**
@@ -48,7 +47,7 @@ class i
         return self::$request;
     }
     /**
-     * @return iframework\UserManager
+     * @return UserManager
      */
     static function users()
     {
@@ -57,7 +56,7 @@ class i
     public static function db()
     {
         if (self::$activeDb<0)
-            throw new \Exception("No database connection.");
+            return end(self::$db);
         return self::$db[self::$activeDb];
     }
     /**
@@ -79,7 +78,7 @@ class i
     }
 
     /**
-     * @return iframework\Session
+     * @return Session
      */
     static function session()
     {
@@ -94,15 +93,60 @@ class i
     }
 
     /**
-     * @return iframework\HTTP
+     * @return HTTP
      */
     static function http()
     {
         return self::$http;
     }
 
-    static function serve($request)
+    /**
+     * View a file (with templates)
+     * @param  [type] $file [description]
+     */
+    static function view($file)
     {
+        if ($file and $file[0]=="/") //absolute
+            $file=realpath($file);
+        else
+            $file=realpath(i::root()."/{$file}.php");
+        if (!$file)
+            throw new Exception("View file '{$file}.php' not found.");
 
+        $t=$file;
+        do
+        {
+            $inc=dirname($t)."/header.php";
+            if (file_exists($inc))
+                if (!include $inc) break;
+            $t=dirname($t);
+        }
+        while($t!==i::root());
+
+        include $file;
+        $t=$file;
+        do
+        {
+            $inc=dirname($t)."/footer.php";
+            if (file_exists($inc))
+                if (!include $inc) break;
+            $t=dirname($t);
+        }
+        while($t!==i::root());
+    }
+    static function serve($request=null)
+    {
+        if ($request===null)
+            $request=i::request();
+        $parts=explode("/",$request);
+        $file=array_pop($parts);
+        $realpath=realpath(i::root()."/".implode("/",$parts));
+        $phpfile=realpath($realpath."/".$file.".php");
+        if (!$realpath or substr($realpath,0,strlen(i::root()))!==i::root())
+            die(i::http()->notFound());
+        elseif ($phpfile)
+            require $phpfile;
+        else
+            die(i::http()->notFound()); 
     }
 }

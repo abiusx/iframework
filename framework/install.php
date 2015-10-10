@@ -1,9 +1,6 @@
 <?php
-/**
- * User: abiusx
- * Date: 5/24/15
- * Time: 8:10 PM
- */
+if (file_exists(".htaccess") or file_exists("../.htaccess"))
+  die("Please remove .htaccess to enable installation.");
 $CLI=(php_sapi_name() === 'cli');
 $EOL=$CLI?PHP_EOL:"<br/>";
 $tab=$CLI?"    ":str_repeat("&nbsp;",4);
@@ -23,7 +20,12 @@ RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^([^?]*)$ index.php?__base=$1 [NC,L,QSA]";
 
 
-if ((file_exists(".htaccess") and !is_writable(".htaccess")) and !is_writable(getcwd()))
+if ((file_exists(".htaccess") and is_writable(".htaccess")) or is_writable(getcwd()))
+{
+    file_put_contents(".htaccess",$htaccess);
+    echo ".htaccess successfully created.",$EOL;
+}
+else
 {
     echo $tab,"I don't have access to write '.htaccess'.",$EOL;
     echo $tab,"Please copy the following in '.htaccess' file, inside root of iframework:",$EOL;
@@ -33,11 +35,6 @@ if ((file_exists(".htaccess") and !is_writable(".htaccess")) and !is_writable(ge
     if (!$CLI)
         echo "</pre>";
     echo $tab,"Creation of the '.htaccess' file makes me understand that installation is finished.",$EOL;
-}
-else
-{
-    file_put_contents(".htaccess",$htaccess);
-    echo ".htaccess successfully created.",$EOL;
 }
 
 echo str_repeat("_",80),$EOL;
@@ -61,7 +58,7 @@ CREATE TABLE IF NOT EXISTS `i_settings` (
   `expiration` int(11) NOT NULL
 );
 CREATE TABLE IF NOT EXISTS `i_users` (
-  `id` int(11) NOT NULL PRIMARY KEY AUTOINCREMENT,
+  `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
   `username` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
   `salt` varchar(255) NOT NULL,
@@ -69,6 +66,14 @@ CREATE TABLE IF NOT EXISTS `i_users` (
   `lastAccess` int(11) NOT NULL
 );
 ";
+if (i::db()->driver=="sqlite")
+{
+  $queries=str_replace(array("AUTO_INCREMENT","int(11)"),array("AUTOINCREMENT","INTEGER"),$queries);
+  if (!is_writable(dirname(i::db()->dbname)))
+    die("The SQLite folder is not writable: ".i::db()->dbname);
+  file_put_contents(i::db()->dbname,"");
+}
+
     $queries=explode(";",$queries);
 array_pop($queries); //remove last
 foreach ($queries as $query)
@@ -80,8 +85,6 @@ foreach ($queries as $query)
     catch (PDOException $e)
     {
       $res=false;
-      echo "<br/>";
-      print_r($e);
     }
     if ($res)
         echo "(Success)",$EOL;
