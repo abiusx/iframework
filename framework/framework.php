@@ -140,6 +140,8 @@ class i
             $request=i::request();
         $parts=explode("/",$request);
         $file=array_pop($parts);
+        if ($file=="")
+            $file="index";
         $realpath=realpath(i::root()."/".implode("/",$parts));
         $phpfile=realpath($realpath."/".$file.".php");
         if (!$realpath or substr($realpath,0,strlen(i::root()))!==i::root())
