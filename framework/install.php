@@ -15,10 +15,10 @@ function head($text)
 head("Creating .htaccess");
 $htaccess="RewriteEngine on
 #RewriteBase ".i::url()."
-RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
+#RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^static/.* - [L,NC]
 RewriteRule ^([^?]*)$ start.php?__base=$1 [NC,L,QSA]";
-
 
 if ((file_exists(".htaccess") and is_writable(".htaccess")) or is_writable(getcwd()))
 {
