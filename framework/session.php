@@ -1,4 +1,5 @@
 <?php
+#FIXME: expire session after an interval, needs a lastAccess for session
 class Session
 {
     function __construct()

@@ -105,3 +105,12 @@ function emapr($array,$expression,$initial=null)
         return eval($code);
     },$initial);
 }
+
+/**
+ * Proper random number for PHP
+ * @return int
+ */
+function random()
+{
+    return mt_rand();
+}
