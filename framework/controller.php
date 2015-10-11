@@ -3,6 +3,16 @@ class Controller
 {
     protected $error=[],$warning=[],$success=[];
     public $request,$file;
+    protected function viewFile($file=null)
+    {
+        if ($file===null)
+            $file=substr($this->file,0,-4)."_view.php";
+        if ($file and $file[0]=="/") //absolute
+            $file=($file);
+        else
+            $file=(i::root()."/{$file}.php");
+        return $file;
+    }
     function __construct($request=null)
     {
         $this->request=$request;
@@ -22,6 +32,26 @@ class Controller
                 return null;
         else
             return $_POST;
+    }
+    function header()
+    {
+        return $this->_er("header");
+    }
+    private function _er($type="header")
+    {
+        $t=$this->viewFile();
+        do
+        {
+            $inc=dirname($t)."/{$type}.php";
+            if (file_exists($inc))
+                if (!include $inc) break;
+            $t=dirname($t);
+        }
+        while($t!==i::root() and strlen($t)>strlen(i::root()));
+    }
+    function footer()
+    {
+        return $this->_er("footer");
     }
     function start()
     {
@@ -52,34 +82,12 @@ class Controller
      */
     function view($file=null)
     {
-        if ($file===null)
-            $file=substr($this->file,0,-4)."_view.php";
-        if ($file and $file[0]=="/") //absolute
-            $file=realpath($file);
-        else
-            $file=realpath(i::root()."/{$file}.php");
-        if (!$file)
+        $file=$this->viewFile($file);
+        if (!realpath($file))
             throw new Exception("View file '{$file}.php' not found.");
 
-        $t=$file;
-        do
-        {
-            $inc=dirname($t)."/header.php";
-            if (file_exists($inc))
-                if (!include $inc) break;
-            $t=dirname($t);
-        }
-        while($t!==i::root());
+        $this->header();
         include $file;
-        $t=$file;
-        
-        do
-        {
-            $inc=dirname($t)."/footer.php";
-            if (file_exists($inc))
-                if (!include $inc) break;
-            $t=dirname($t);
-        }
-        while($t!==i::root());
+        $this->footer();
     }
 }

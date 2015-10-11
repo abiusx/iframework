@@ -65,7 +65,7 @@ class UserManager
     function isLoggedIn($userid)
     {
         $r=i::sql("SELECT lastAccess FROM i_users WHERE id=?",$userid);
-        return ($r[0]->LastAccess+self::$Timeout<time());
+        return ($r[0]->lastAccess+self::$Timeout<time());
     }
 
     /**
@@ -76,11 +76,13 @@ class UserManager
     function logout($userid=null)
     {
         if ($userid===null)
-            if (i::user()===null)
+            if (self::current()===null)
                 return false;
             else
-                $userid=i::session()->userId;
-        unset(i::session()->userId);
+                $userid=self::current();
+        unset(i::session()->userid);
+        i::session()->regenerate();
+        return true;
     }
 
     /**
@@ -97,11 +99,11 @@ class UserManager
         if ($newPassword)
         {
             $hashedPass=new Password($newUsername, $newPassword);
-            j::SQL ( "UPDATE i_users SET username=?, password=?, salt=?, protocol=? WHERE LOWER(username)=LOWER(?)",
+            i::SQL ( "UPDATE i_users SET username=?, password=?, salt=?, protocol=? WHERE LOWER(username)=LOWER(?)",
                      $newUsername, $hashedPass->hash(),$hashedPass->salt(),$hashedPass->protocol(), $oldUsername);
         }
         else
-            j::SQL ( "UPDATE i_users SET username=? WHERE LOWER(username)=LOWER(?)", $newUsername, $oldUsername );
+            i::SQL ( "UPDATE i_users SET username=? WHERE LOWER(username)=LOWER(?)", $newUsername, $oldUsername );
         return true;
     }
     /**
@@ -112,10 +114,10 @@ class UserManager
      */
     function checkCredentials($username, $password)
     {
-        $res=jf::SQL("SELECT * FROM i_users WHERE LOWER(username)=LOWER(?)",$username);
+        $res=i::SQL("SELECT * FROM i_users WHERE LOWER(username)=LOWER(?)",$username);
         if (!$res) return false;
         $res=$res[0];
-        return Password::validate($username, $password, $res->password, $res->salt,$res->protocol);
+        return Password::validate( $password, $res->password, $res->salt,$res->protocol);
 
     }
     /**
@@ -127,7 +129,7 @@ class UserManager
      */
     function login($userid)
     {
-        if ($this->exists($userid))
+        if ($this->idExists($userid))
         {
             i::session()->userid=$userid;
             return true;
@@ -140,7 +142,7 @@ class UserManager
         $res=i::sql( "SELECT * FROM i_users WHERE LOWER(username)=LOWER(?)", $username );
         return $res!=null;
     }
-    function idExist($userid)
+    function idExists($userid)
     {
         $res=i::sql ( "SELECT * FROM i_users WHERE id=?", $userid);
         return $res!=null;
@@ -169,7 +171,7 @@ class UserManager
     function username($userid=null)
     {
         if ($userid===null)
-            $userid=i::currentUser();
+            $userid=self::current();
         $res= i::sql( "SELECT username FROM i_users WHERE id=?", $userid );
         if ($res)
             return $res[0]->username;
@@ -210,6 +212,17 @@ class UserManager
     function touch($userid)
     {
         return i::sql( "UPDATE i_users SET lastAccess=? WHERE id=?", time(),$userid);
+    }
+    /**
+     * Returns the current logged in user
+     * @return null or integer
+     */
+    function current()
+    {
+        if (isset(i::session()->userid))
+            return i::session()->userid;
+        else 
+            return null;
     }
 
 }

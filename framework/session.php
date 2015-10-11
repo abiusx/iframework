@@ -11,9 +11,21 @@ class Session
     {
         session_write_close();
     }
+    function regenerate($delete=true)
+    {
+        session_regenerate_id($delete);
+    }
     function clear()
     {
         $_SESSION=array();
+    }
+    function __isset($item)
+    {
+        return isset($_SESSION[$item]);
+    }
+    function __unset($item)
+    {
+        unset($_SESSION[$item]);
     }
     function __set($item,$value)
     {

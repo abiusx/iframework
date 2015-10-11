@@ -3,6 +3,8 @@ require_once __DIR__."/functions.php";
 require_once __DIR__."/db.php";
 require_once __DIR__."/session.php";
 require_once __DIR__."/user.php";
+require_once __DIR__."/settings.php";
+require_once __DIR__."/userstore.php";
 require_once __DIR__."/http.php";
 require_once __DIR__."/controller.php";
 class i
@@ -31,7 +33,7 @@ class i
     protected static $db=[];
     protected static $activeDb=-1;
     protected static $request;
-    protected static $users,$http,$session;
+    protected static $users,$http,$session,$userStore,$settings;
     protected static $root;
     public static $controller=null;
 
@@ -54,6 +56,22 @@ class i
     {
         return self::$users;
     }
+
+    /**
+     * @return UserStore
+     */
+    static function userStore()
+    {
+        return self::$userStore;
+    }
+    /**
+     * @return Settings
+     */
+    static function settings()
+    {
+        return self::$settings;
+    }
+
     public static function db()
     {
         if (self::$activeDb<0)
@@ -86,11 +104,11 @@ class i
         return self::$session;
     }
     /**
-     * Return ID of current user
+     * Return ID of current user or null
      */
     static function currentUser()
     {
-        return self::session()->userid;
+        return self::users()->current();
     }
 
     /**
