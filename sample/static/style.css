@@ -1,0 +1,32 @@
+body {
+}
+label {
+	float:left;
+	clear:both;
+	width:200px;
+}
+.error,.warning,.success {
+	padding:8px;
+	margin:5px;
+	display:list-item;
+	list-style-type: disc; 
+	list-style-position: inside;
+}
+.error {
+	background-color:#FFFAFA;
+	border:1px dotted red;
+	color:darkred;
+	font-weight: bold;
+}
+.warning {
+	background-color:#FFD;
+	border:1px dotted red;
+	color:#752;
+	font-weight: bold;
+}
+.success {
+	background-color:#DFD;
+	border:1px dotted green;
+	color:darkgreen;
+	font-weight: bold;
+}
