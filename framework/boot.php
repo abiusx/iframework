@@ -16,6 +16,8 @@ function iframework_boot()
 
 	i::__init("users",new UserManager());
 	i::__init("session",new Session());
+	i::__init("settings",new Settings());
+	i::__init("userStore",new UserStore());
 	if (isset($_GET['__base']))
 	{
 	    i::__init("request",$_GET['__base']);

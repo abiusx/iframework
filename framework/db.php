@@ -25,7 +25,7 @@ class Database
     /**
      * @param $query
      * @param ... args
-     * @return null
+     * @return rowCount on INSERT/DELETE, empty array or result array on SELECT, direct query result otherwise
      */
     function sql($query)
     {
