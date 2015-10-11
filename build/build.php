@@ -24,6 +24,7 @@ function get_code($file)
 	echo "Processing ".$file.PHP_EOL;
 	$code=file_get_contents($file);
 	$tokens=token_get_all($code);
+	$replacements=[];
 	for ($i=0;$i<count($tokens);++$i)
 	{
 		$token=$tokens[$i];
@@ -39,18 +40,32 @@ function get_code($file)
 				$new_file=evaluate($include_tokens,$file);
 				if ($new_file and realpath($new_file))
 				{
-					$start_pos=strpos($code, $token[1]); //include, require, etc.
-					$end_pos=strpos($code,";",$start_pos+1); //find the semicolon
+					$line=$token[2];
+					// $init_pos=0;
+					// while ($line-->0)
+					// 	$init_pos=strpos($code,PHP_EOL,$init_pos+1);
+					// $start_pos=strpos($code, $token[1],$init_pos); //include, require, etc.
+					// $end_pos=strpos($code,";",$start_pos+1); //find the semicolon
 
-					$code=substr($code,0,$start_pos)."###".basename($new_file).":".
-					get_code($new_file)
-					.substr($code,$end_pos+1);
+					// $replacements[]=array($start_pos,$end_pos,$new_file);
+					$replacements[]=array($line,$new_file);
 				}
 
 
 			}
 		}
 	}
+	$code_array=explode(PHP_EOL,$code);
+	$shift=0;
+	foreach ($replacements as $replacement)
+	{
+		list($line,$new_file)=$replacement;
+		$new_code_array=explode(PHP_EOL,get_code($new_file));
+		$code_array=array_merge(array_slice($code_array,0,$shift+$line-1),
+			$new_code_array,array_slice($code_array,$line+$shift));
+		$shift+=count($new_code_array)-1;
+	}
+	$code=implode(PHP_EOL,$code_array);
 
 	if (substr($code,0,2)=="<?")
 	{
