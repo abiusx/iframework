@@ -4,6 +4,7 @@ require_once __DIR__."/db.php";
 require_once __DIR__."/session.php";
 require_once __DIR__."/user.php";
 require_once __DIR__."/http.php";
+require_once __DIR__."/controller.php";
 class i
 {
 
@@ -32,7 +33,7 @@ class i
     protected static $request;
     protected static $users,$http,$session;
     protected static $root;
-
+    public static $controller=null;
 
     /**
      * @return root of web app
@@ -100,55 +101,10 @@ class i
         return self::$http;
     }
 
-    /**
-     * View a file (with templates)
-     * @param  [type] $file [description]
-     */
-    static function view($file)
-    {
-        if ($file and $file[0]=="/") //absolute
-            $file=realpath($file);
-        else
-            $file=realpath(i::root()."/{$file}.php");
-        if (!$file)
-            throw new Exception("View file '{$file}.php' not found.");
-
-        $t=$file;
-        do
-        {
-            $inc=dirname($t)."/header.php";
-            if (file_exists($inc))
-                if (!include $inc) break;
-            $t=dirname($t);
-        }
-        while($t!==i::root());
-
-        include $file;
-        $t=$file;
-        do
-        {
-            $inc=dirname($t)."/footer.php";
-            if (file_exists($inc))
-                if (!include $inc) break;
-            $t=dirname($t);
-        }
-        while($t!==i::root());
-    }
+    
     static function serve($request=null)
     {
-        if ($request===null)
-            $request=i::request();
-        $parts=explode("/",$request);
-        $file=array_pop($parts);
-        if ($file=="")
-            $file="index";
-        $realpath=realpath(i::root()."/".implode("/",$parts));
-        $phpfile=realpath($realpath."/".$file.".php");
-        if (!$realpath or substr($realpath,0,strlen(i::root()))!==i::root())
-            die(i::http()->notFound());
-        elseif ($phpfile)
-            require $phpfile;
-        else
-            die(i::http()->notFound()); 
+        $x=new Controller($request);
+        $x->start();
     }
 }
