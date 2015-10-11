@@ -1,7 +1,8 @@
 <?php
 require_once "framework/boot.php";
 // include "iframework.3.php";
-if (function_exists("setup")) return;
+if (defined("iframework_started")) return;
+define ("iframework_started",true);
 function setup()
 {
 	// i::__init("db",array(new iframework\Database("root","123456aB","iframework","mysql")));

@@ -21,7 +21,7 @@ function evaluate($tokens,$file)
 }
 function get_code($file)
 {
-	echo "New file:".$file.PHP_EOL;
+	echo "Processing ".$file.PHP_EOL;
 	$code=file_get_contents($file);
 	$tokens=token_get_all($code);
 	for ($i=0;$i<count($tokens);++$i)
@@ -63,9 +63,11 @@ function get_code($file)
 		$code=substr($code,0,-2);
 	return $code;
 }
+echo "Starting iframework build...",PHP_EOL;
 $code=get_code(__DIR__."/../framework/boot.php");
 $version=trim(`git rev-list HEAD | wc -l`);
 if (!$version)
 	$version="1.0";
 
 file_put_contents("iframework.{$version}.php","<?php\n".$code);
+echo "Done.",PHP_EOL;

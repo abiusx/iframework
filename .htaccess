@@ -1,5 +1,6 @@
 RewriteEngine on
 #RewriteBase 
-RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
+#RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^static/.* - [L,NC]
 RewriteRule ^([^?]*)$ start.php?__base=$1 [NC,L,QSA]
