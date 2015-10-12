@@ -86,5 +86,5 @@ if (!$version)
 
 file_put_contents("iframework.{$version}.php","<?php\n".$code);
 $compact=base64_encode(gzcompress($code,9));
-file_put_contents("iframework.{$version}.compact.php","<?php eval(gzuncompress(base64_decode('{$compact}')));");
+file_put_contents("iframework.{$version}.compact.php","<?php #iframework {$version}\neval(gzuncompress(base64_decode('{$compact}')));");
 echo "Done.",PHP_EOL;
