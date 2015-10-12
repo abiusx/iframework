@@ -80,9 +80,11 @@ function get_code($file)
 }
 echo "Starting iframework build...",PHP_EOL;
 $code=get_code(__DIR__."/../framework/boot.php");
-$version=trim(`git rev-list HEAD | wc -l`);
+$version="1.".trim(`git rev-list HEAD | wc -l`);
 if (!$version)
-	$version="1.0";
+	$version="1.20";
 
 file_put_contents("iframework.{$version}.php","<?php\n".$code);
+$compact=base64_encode(gzcompress($code,9));
+file_put_contents("iframework.{$version}.compact.php","<?php eval(gzuncompress(base64_decode('{$compact}')));");
 echo "Done.",PHP_EOL;
