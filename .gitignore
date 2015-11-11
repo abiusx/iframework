@@ -2,3 +2,4 @@
 *.sqlite3
 build/iframework*.php
 .htaccess.*
+*.sublime-workspace
