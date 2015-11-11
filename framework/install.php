@@ -43,12 +43,12 @@ else
 
 echo str_repeat("_",80),$EOL;
 
-
+$dbname=(i::db()->dbname);
 head("Setting up database");
 $queries="
-DROP DATABASE iframework;
-CREATE DATABASE iframework;
-USE iframework;
+DROP DATABASE {$dbname};
+CREATE DATABASE {$dbname};
+USE {$dbname};
 CREATE TABLE IF NOT EXISTS `i_userstore` (
   `userid` int(11) NOT NULL,
   `name` varchar(200) NOT NULL,
